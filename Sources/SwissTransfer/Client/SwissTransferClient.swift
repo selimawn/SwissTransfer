@@ -453,7 +453,10 @@ actor SwissTransferClient {
         report()
     }
 
-    private func withRetry<T>(attempts: Int = 3, _ work: () async throws -> T) async throws -> T {
+    private func withRetry<T: Sendable>(
+        attempts: Int = 3,
+        _ work: nonisolated(nonsending) () async throws -> T
+    ) async throws -> T {
         var last: Error = TransferError.message("Échec réseau.")
         for attempt in 1...attempts {
             try Task.checkCancellation()
